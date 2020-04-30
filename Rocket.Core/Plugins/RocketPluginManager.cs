@@ -1,12 +1,12 @@
 ﻿using Rocket.API;
+using Rocket.Core.Extensions;
 using Rocket.Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using System.Linq;
-using Rocket.Core.Extensions;
 
 namespace Rocket.Core.Plugins
 {
@@ -16,7 +16,7 @@ namespace Rocket.Core.Plugins
         public event PluginsLoaded OnPluginsLoaded;
 
         private static List<Assembly> pluginAssemblies;
-        private static List<GameObject> plugins = new List<GameObject>();
+        private static readonly List<GameObject> plugins = new List<GameObject>();
         internal static List<IRocketPlugin> Plugins { get { return plugins.Select(g => g.GetComponent<IRocketPlugin>()).Where(p => p != null).ToList<IRocketPlugin>(); } }
         private Dictionary<string, string> libraries = new Dictionary<string, string>();
 
@@ -32,14 +32,13 @@ namespace Rocket.Core.Plugins
 
         public IRocketPlugin GetPlugin(string name)
         {
-            return plugins.Select(g => g.GetComponent<IRocketPlugin>()).Where(p => p != null && ((IRocketPlugin)p).Name == name).FirstOrDefault();
+            return plugins.Select(g => g.GetComponent<IRocketPlugin>()).Where(p => p != null && (p).Name == name).FirstOrDefault();
         }
 
         private void Awake() {
             AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs args)
             {
-                string file;
-                if (libraries.TryGetValue(args.Name, out file))
+                if (libraries.TryGetValue(args.Name, out string file))
                 {
                     return Assembly.Load(File.ReadAllBytes(file));
                 }

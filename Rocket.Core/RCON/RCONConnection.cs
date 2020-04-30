@@ -14,7 +14,7 @@ namespace Rocket.Core.RCON
 
         public RCONConnection(TcpClient client, int instance)
         {
-            this.Client = client;
+            Client = client;
             Authenticated = false;
             Interactive = true;
             InstanceID = instance;

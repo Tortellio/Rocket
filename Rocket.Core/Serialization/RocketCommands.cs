@@ -1,7 +1,5 @@
-﻿using Rocket.Core.Assets;
+﻿using Rocket.API;
 using System.Xml.Serialization;
-using System;
-using Rocket.API;
 using System.Collections.Generic;
 
 namespace Rocket.Core.Serialization

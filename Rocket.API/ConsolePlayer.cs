@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Rocket.API
+﻿namespace Rocket.API
 {
     public class ConsolePlayer : IRocketPlayer
     {

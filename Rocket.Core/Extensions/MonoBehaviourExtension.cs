@@ -9,10 +9,10 @@ namespace Rocket.Core.Extensions
     {
         public static void Invoke(this MonoBehaviour behaviour, string method, object options, float delay)
         {
-            behaviour.StartCoroutine(_invoke(behaviour, method, delay, options));
+            behaviour.StartCoroutine(Invoke(behaviour, method, delay, options));
         }
 
-        private static IEnumerator _invoke(this MonoBehaviour behaviour, string method, float delay, object options)
+        private static IEnumerator Invoke(this MonoBehaviour behaviour, string method, float delay, object options)
         {
             if (delay > 0f)
             {

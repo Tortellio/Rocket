@@ -3,8 +3,6 @@ using Rocket.Core.Logging;
 using Rocket.Core.RCON;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Rocket.Core.Commands
 {
@@ -45,23 +43,23 @@ namespace Rocket.Core.Commands
             for (int i = 0; i < RCONServer.Clients.Count; i++)
             {
                 RCONConnection client = RCONServer.Clients[i];
-                int timeTotal = (int)((DateTime.Now - client.ConnectedTime).TotalSeconds);
+                int timeTotal = (int)(DateTime.Now - client.ConnectedTime).TotalSeconds;
                 string connectedTimeFormat = "";
 
                 // Format days, hours minutes and seconds since the client connected to RCON.
                 if (timeTotal >= (60 * 60 * 24))
                 {
-                    connectedTimeFormat = ((int)(timeTotal / (60 * 60 * 24))).ToString() + "d ";
+                    connectedTimeFormat = (timeTotal / (60 * 60 * 24)).ToString() + "d ";
                 }
                 if (timeTotal >= (60 * 60))
                 {
-                    connectedTimeFormat += ((int)((timeTotal / (60 * 60)) % 24)).ToString() + "h ";
+                    connectedTimeFormat += ((timeTotal / (60 * 60)) % 24).ToString() + "h ";
                 }
                 if (timeTotal >= 60)
                 {
-                    connectedTimeFormat += ((int)((timeTotal / 60) % 60)).ToString() + "m ";
+                    connectedTimeFormat += ((timeTotal / 60) % 60).ToString() + "m ";
                 }
-                connectedTimeFormat += ((int)(timeTotal % 60)).ToString() + "s";
+                connectedTimeFormat += (timeTotal % 60).ToString() + "s";
                 Logger.Log(R.Translate("command_rwho_line", i + 1, client.InstanceID, client.Authenticated, client.Address, client.ConnectedTime.ToString(), connectedTimeFormat));
             }
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rocket.API;
+using System;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
@@ -6,21 +7,19 @@ using System.Text;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using Rocket.API;
 using Logger = Rocket.Core.Logging.Logger;
 
 namespace Rocket.Core.RCON
 {
     public class RCONServer : MonoBehaviour
     {
-        private static List<RCONConnection> clients = new List<RCONConnection>();
-        public static List<RCONConnection> Clients { get { return clients; } }
+        public static List<RCONConnection> Clients { get; } = new List<RCONConnection>();
         private TcpListener listener;
         private bool exiting = false;
         private Thread waitingThread;
         private static int instanceID = 0;
 
-        private static Queue<string> commands = new Queue<string>();
+        private static readonly Queue<string> commands = new Queue<string>();
 
         public void Awake()
         {
@@ -35,15 +34,15 @@ namespace Rocket.Core.RCON
                 {
                     instanceID++;
                     RCONConnection newclient = new RCONConnection(listener.AcceptTcpClient(), instanceID);
-                    clients.Add(newclient);
+                    Clients.Add(newclient);
                     newclient.Send("RocketRcon v" + Assembly.GetExecutingAssembly().GetName().Version + "\r\n");
-                    ThreadPool.QueueUserWorkItem(handleConnection, newclient);
+                    ThreadPool.QueueUserWorkItem(HandleConnection, newclient);
                 }
             });
             waitingThread.Start();
         }
 
-        private static void handleConnection(object obj)
+        private static void HandleConnection(object obj)
         {
             try
             {
@@ -54,7 +53,7 @@ namespace Rocket.Core.RCON
                 bool maxClientsReached = false;
                 if (R.Settings.Instance.RCON.EnableMaxGlobalConnections)
                 {
-                    if (clients.Count > R.Settings.Instance.RCON.MaxGlobalConnections)
+                    if (Clients.Count > R.Settings.Instance.RCON.MaxGlobalConnections)
                     {
                         maxClientsReached = true;
                         newclient.Send("Error: Too many clients connected to RCON, not accepting connection!\r\n");
@@ -64,10 +63,10 @@ namespace Rocket.Core.RCON
                 if (R.Settings.Instance.RCON.EnableMaxLocalConnections && !maxClientsReached)
                 {
                     int currentLocalCount = 0;
-                    for (int i = 0; i < clients.Count; i++)
+                    for (int i = 0; i < Clients.Count; i++)
                     {
-                        if (newclient.Client.Client.Connected && clients[i].Client.Client.Connected)
-                            if (((IPEndPoint)newclient.Client.Client.RemoteEndPoint).Address.Equals(((IPEndPoint)clients[i].Client.Client.RemoteEndPoint).Address))
+                        if (newclient.Client.Client.Connected && Clients[i].Client.Client.Connected)
+                            if (((IPEndPoint)newclient.Client.Client.RemoteEndPoint).Address.Equals(((IPEndPoint)Clients[i].Client.Client.RemoteEndPoint).Address))
                             {
                                 currentLocalCount++;
                                 if (currentLocalCount > R.Settings.Instance.RCON.MaxLocalConnections)
@@ -159,7 +158,7 @@ namespace Rocket.Core.RCON
                 }
 
 
-                clients.Remove(newclient);
+                Clients.Remove(newclient);
                 newclient.Send("Good bye!");
                 Thread.Sleep(1500);
                 Logger.Log("Client ID: " + newclient.InstanceID + " has disconnected! (IP: " + newclient.Address + ")");
@@ -168,7 +167,7 @@ namespace Rocket.Core.RCON
             }
             catch (Exception ex)
             {
-                Logging.Logger.LogException(ex);
+                Logger.LogException(ex);
             }
         }
 
@@ -183,7 +182,7 @@ namespace Rocket.Core.RCON
 
         public static void Broadcast(string message)
         {
-            foreach (RCONConnection client in clients)
+            foreach (RCONConnection client in Clients)
             {
                 if (client.Authenticated)
                     client.Send(message);
@@ -195,12 +194,12 @@ namespace Rocket.Core.RCON
             exiting = true;
             // Force all connected RCON clients to disconnect from the server on shutdown. The server will get stuck in the shutdown process until all clients disconnect.
             List<RCONConnection> connections = new List<RCONConnection>();
-            connections.AddRange(clients);
+            connections.AddRange(Clients);
             foreach (RCONConnection client in connections)
             {
                 client.Close();
             }
-            clients.Clear();
+            Clients.Clear();
             waitingThread.Abort();
             listener.Stop();
         }

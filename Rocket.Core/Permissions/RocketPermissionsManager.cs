@@ -1,10 +1,8 @@
 ﻿using Rocket.API;
 using Rocket.API.Serialisation;
 using Rocket.Core.Assets;
-using Rocket.Core.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Rocket.Core.Permissions
@@ -66,6 +64,11 @@ namespace Rocket.Core.Permissions
         public bool HasPermission(IRocketPlayer player, List<string> permissions)
         {
             return helper.HasPermission(player, permissions);
+        }
+
+        public bool HasGroup(IRocketPlayer player, string group)
+        {
+            return helper.HasGroup(player, group);
         }
 
         public List<RocketPermissionsGroup> GetGroups(IRocketPlayer player, bool includeParentGroups)

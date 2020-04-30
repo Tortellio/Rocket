@@ -1,16 +1,15 @@
-﻿using Rocket.Core.Assets;
+﻿using Rocket.API;
 using System;
 using System.IO;
-using Rocket.API;
 using System.Xml.Serialization;
 
 namespace Rocket.Core.Assets
 {
     public class XMLFileAsset<T> : Asset<T> where T : class, IDefaultable
     {
-        private XmlSerializer serializer;
-        private string file;
-        T defaultInstance;
+        private readonly XmlSerializer serializer;
+        private readonly string file;
+        private readonly T defaultInstance;
 
         public XMLFileAsset(string file, Type[] extraTypes = null, T defaultInstance = null)
         {
@@ -25,7 +24,7 @@ namespace Rocket.Core.Assets
             try
             {
                 string directory = Path.GetDirectoryName(file);
-                if (!String.IsNullOrEmpty(directory) && !Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory)) Directory.CreateDirectory(directory);
                 using (StreamWriter writer = new StreamWriter(file))
                 {
                     if (instance == null)
@@ -46,7 +45,7 @@ namespace Rocket.Core.Assets
             }
             catch (Exception ex)
             {
-                throw new Exception(String.Format("Failed to serialize XMLFileAsset: {0}", file), ex);
+                throw new Exception(string.Format("Failed to serialize XMLFileAsset: {0}", file), ex);
             }
         }
 
@@ -54,7 +53,7 @@ namespace Rocket.Core.Assets
         {
             try
             {
-                if (!String.IsNullOrEmpty(file) && File.Exists(file))
+                if (!string.IsNullOrEmpty(file) && File.Exists(file))
                 {
                     using (StreamReader reader = new StreamReader(file))
                     {
@@ -64,12 +63,11 @@ namespace Rocket.Core.Assets
 
                 Save();
 
-                if (callback != null)
-                    callback(this);
+                callback?.Invoke(this);
             }
             catch (Exception ex)
             {
-                throw new Exception(String.Format("Failed to deserialize XMLFileAsset: {0}", file), ex);
+                throw new Exception(string.Format("Failed to deserialize XMLFileAsset: {0}", file), ex);
             }
         }
         

@@ -16,7 +16,7 @@ namespace Rocket.API
         PluginState State { get; }
         TranslationList DefaultTranslations { get; }
         IAsset<TranslationList> Translations { get; }
-        T TryAddComponent<T>() where T : UnityEngine.Component;
-        void TryRemoveComponent<T>() where T : UnityEngine.Component;
+        T TryAddComponent<T>() where T : Component;
+        void TryRemoveComponent<T>() where T : Component;
     }
 }

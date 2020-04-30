@@ -14,7 +14,7 @@ namespace Rocket.Core
             if (File.Exists(logFile))
             {
                 string ver = ((int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString();
-                File.Move(logFile, Path.Combine(LogsDirectory, String.Format(LogBackupFile, ver)));
+                File.Move(logFile, Path.Combine(LogsDirectory, string.Format(LogBackupFile, ver)));
             };
         }
 

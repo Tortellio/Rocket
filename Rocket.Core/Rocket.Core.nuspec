@@ -13,8 +13,8 @@
     <tags>Rocket Mod Unity3D</tags>
   </metadata>
   <files>
-    <file src="Rocket.API.dll" target="lib/net35" />
-    <file src="Rocket.Core.dll" target="lib/net35" />
-    <file src="UnityEngine.dll" target="lib/net35" />
+    <file src="Rocket.API.dll" target="lib/net4" />
+    <file src="Rocket.Core.dll" target="lib/net4" />
+    <file src="UnityEngine.dll" target="lib/net4" />
   </files>
 </package>

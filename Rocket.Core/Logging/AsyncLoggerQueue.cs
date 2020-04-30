@@ -12,14 +12,14 @@ namespace Rocket.Core.Logging
 
         private static readonly object logEntryQueueLock = new object();
 
-        private Queue<LogEntry> logEntryQueue = new Queue<LogEntry>();
-        private BackgroundWorker logger = new BackgroundWorker();
+        private readonly Queue<LogEntry> logEntryQueue = new Queue<LogEntry>();
+        private readonly BackgroundWorker logger = new BackgroundWorker();
 
         private AsyncLoggerQueue()
         {
             //configure background worker
             logger.WorkerSupportsCancellation = false;
-            logger.DoWork += new DoWorkEventHandler(_Logger_DoWork);
+            logger.DoWork += new DoWorkEventHandler(Logger_DoWork);
         }
 
         public void Enqueue(LogEntry le)
@@ -35,7 +35,7 @@ namespace Rocket.Core.Logging
             }
         }
 
-        private void _Logger_DoWork(object sender, DoWorkEventArgs e)
+        private void Logger_DoWork(object sender, DoWorkEventArgs e)
         {
             while (true)
             {
@@ -53,7 +53,7 @@ namespace Rocket.Core.Logging
                     le = logEntryQueue.Dequeue();
                 }
 
-                processLog(le);
+                ProcessLog(le);
 
                 if (skipEmptyCheck) //if LogEntryQueue.Count was > 1 before we wrote the last LogEntry we know to continue without double checking
                 {
@@ -65,7 +65,7 @@ namespace Rocket.Core.Logging
                 }
             }
         }
-        private void processLog(LogEntry entry) {
+        private void ProcessLog(LogEntry entry) {
             StreamWriter streamWriter = File.AppendText(Path.Combine(Environment.LogsDirectory, Environment.LogFile));
             streamWriter.WriteLine("[" + DateTime.Now + "] [" + entry.Severity.ToString() + "] " + entry.Message);
             streamWriter.Close();

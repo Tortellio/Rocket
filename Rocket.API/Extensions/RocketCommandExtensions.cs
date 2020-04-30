@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace Rocket.API.Extensions
 {
@@ -9,37 +6,32 @@ namespace Rocket.API.Extensions
     {
         public static string GetStringParameter(this string[] array, int index)
         {
-            return (array.Length <= index || String.IsNullOrEmpty(array[index])) ? null : array[index];
+            return (array.Length <= index || string.IsNullOrEmpty(array[index])) ? null : array[index];
         }
 
         public static int? GetInt32Parameter(this string[] array, int index)
         {
-            int output;
-            return (array.Length <= index || !Int32.TryParse(array[index].ToString(), out output)) ? null : (int?)output;
+            return (array.Length <= index || !int.TryParse(array[index].ToString(), out int output)) ? null : (int?)output;
         }
 
         public static uint? GetUInt32Parameter(this string[] array, int index)
         {
-            uint output;
-            return (array.Length <= index || !uint.TryParse(array[index].ToString(), out output)) ? null : (uint?)output;
+            return (array.Length <= index || !uint.TryParse(array[index].ToString(), out uint output)) ? null : (uint?)output;
         }
 
         public static byte? GetByteParameter(this string[] array, int index)
         {
-            byte output;
-            return (array.Length <= index || !Byte.TryParse(array[index].ToString(), out output)) ? null : (byte?)output;
+            return (array.Length <= index || !byte.TryParse(array[index].ToString(), out byte output)) ? null : (byte?)output;
         }
 
         public static ushort? GetUInt16Parameter(this string[] array, int index)
         {
-            ushort output;
-            return (array.Length <= index || !UInt16.TryParse(array[index].ToString(), out output)) ? null : (ushort?)output;
+            return (array.Length <= index || !ushort.TryParse(array[index].ToString(), out ushort output)) ? null : (ushort?)output;
         }
 
         public static float? GetFloatParameter(this string[] array, int index)
         {
-            float output;
-            return (array.Length <= index || !float.TryParse(array[index].ToString(), out output)) ? null : (float?)output;
+            return (array.Length <= index || !float.TryParse(array[index].ToString(), out float output)) ? null : (float?)output;
         }
 
         public static string GetParameterString(this string[] array, int startingIndex = 0)

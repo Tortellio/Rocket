@@ -9,15 +9,15 @@ namespace Rocket.API.Extensions
     {
         public static object TryAddComponent(this UnityEngine.GameObject gameobject, Type T)
         {
-            return tryAddComponent(gameobject, T);
+            return P_TryAddComponent(gameobject, T);
         }
 
         public static T TryAddComponent<T>(this UnityEngine.GameObject gameobject) where T : UnityEngine.Component
         {
-            return (T)tryAddComponent(gameobject, typeof(T));
+            return (T)P_TryAddComponent(gameobject, typeof(T));
         }
 
-        private static object tryAddComponent(UnityEngine.GameObject gameobject, Type T)
+        private static object P_TryAddComponent(UnityEngine.GameObject gameobject, Type T)
         {
             try
             {
@@ -25,13 +25,13 @@ namespace Rocket.API.Extensions
             }
             catch (Exception ex)
             {
-                throw new Exception(String.Format("An error occured while adding component {0}", T.Name), ex);
+                throw new Exception(string.Format("An error occured while adding component {0}", T.Name), ex);
             }
         }
 
         public static void TryRemoveComponent(this UnityEngine.GameObject gameobject,Type T)
         {
-            tryRemoveComponent(gameobject, T);
+            P_TryRemoveComponent(gameobject, T);
         }
 
         public static void TryRemoveComponent<T>(this UnityEngine.GameObject gameobject) where T : UnityEngine.Component
@@ -39,7 +39,7 @@ namespace Rocket.API.Extensions
             TryRemoveComponent(gameobject,typeof(T));
         }
 
-        private static void tryRemoveComponent(UnityEngine.GameObject gameobject, Type T)
+        private static void P_TryRemoveComponent(UnityEngine.GameObject gameobject, Type T)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Rocket.API.Extensions
             }
             catch (Exception ex)
             {
-                throw new Exception(String.Format("An error occured while removing component {0}", T.Name), ex);
+                throw new Exception(string.Format("An error occured while removing component {0}", T.Name), ex);
             }
         }
 

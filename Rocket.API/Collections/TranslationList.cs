@@ -56,7 +56,7 @@ namespace Rocket.API.Collections
             return translations.GetEnumerator();
         }
 
-        public void Add(Object o)
+        public void Add(object o)
         {
             translations.Add((TranslationListEntry)o);
         }
@@ -91,7 +91,7 @@ namespace Rocket.API.Collections
         public string Translate(string translationKey, params object[] placeholder)
         {
             string value = this[translationKey];
-            if (String.IsNullOrEmpty(value)) return translationKey;
+            if (string.IsNullOrEmpty(value)) return translationKey;
                 
             if (value.Contains("{") && value.Contains("}") && placeholder != null && placeholder.Length != 0)
             {
@@ -99,7 +99,7 @@ namespace Rocket.API.Collections
                 {
                     if (placeholder[i] == null) placeholder[i] = "NULL";
                 }
-                value = String.Format(value, placeholder);
+                value = string.Format(value, placeholder);
             }
             return value;
         }

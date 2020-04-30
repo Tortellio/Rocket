@@ -1,31 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Rocket.API
+﻿namespace Rocket.API
 {
     public class RocketPlayer : IRocketPlayer
     {
-        private string id;
-        public string Id { get { return id; } }
-
-        private string displayName;
-        public string DisplayName { get { return displayName; } }
-
-        private bool isAdmin;
-        public bool IsAdmin { get { return isAdmin; } }
+        public string Id { get; }
+        public string DisplayName { get; }
+        public bool IsAdmin { get; }
 
         public RocketPlayer(string Id, string DisplayName = null, bool IsAdmin = false)
         {
-            id = Id;
+            this.Id = Id;
             if (DisplayName == null)
             {
-                DisplayName = Id;
+                this.DisplayName = Id;
             }
             else
             {
-                displayName = DisplayName;
+                this.DisplayName = DisplayName;
             }
-            isAdmin = IsAdmin;
+            this.IsAdmin = IsAdmin;
         }
 
         public int CompareTo(object obj)

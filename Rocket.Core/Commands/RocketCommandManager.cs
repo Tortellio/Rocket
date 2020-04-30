@@ -7,11 +7,10 @@ using Rocket.API;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using Rocket.Core.Utils;
-using Rocket.Core.Logging;
 using Rocket.Core.Serialization;
 using Rocket.Core.Assets;
-using Rocket.Core.Permissions;
 using Rocket.API.Serialisation;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace Rocket.Core.Commands
 {
@@ -28,24 +27,24 @@ namespace Rocket.Core.Commands
         internal void Reload()
         {
             commandMappings.Load();
-            checkCommandMappings();
+            CheckCommandMappings();
         }
 
         private void Awake()
         {
             Commands = commands.AsReadOnly();
             commandMappings = new XMLFileAsset<RocketCommands>(Environment.CommandsFile);
-            checkCommandMappings();
+            CheckCommandMappings();
             R.Plugins.OnPluginsLoaded += Plugins_OnPluginsLoaded;
         }
 
-        private void checkCommandMappings()
+        private void CheckCommandMappings()
         {
             commandMappings.Instance.CommandMappings = commandMappings.Instance.CommandMappings.Distinct(new CommandMappingComparer()).ToList();
-            checkDuplicateCommandMappings();
+            CheckDuplicateCommandMappings();
         }
 
-        private void checkDuplicateCommandMappings(string classname = null) {
+        private void CheckDuplicateCommandMappings(string classname = null) {
             foreach (CommandMapping mapping in (classname == null) ? commandMappings.Instance.CommandMappings : commandMappings.Instance.CommandMappings.Where(cm => cm.Class == classname))
             {
                 string n = mapping.Name.ToLower();
@@ -54,7 +53,7 @@ namespace Rocket.Core.Commands
                 if (mapping.Enabled)
                     foreach (CommandMapping otherMappings in commandMappings.Instance.CommandMappings.Where(m => m.Name.ToLower() == n && m.Enabled && m.Class.ToLower() != c))
                     {
-                        Logging.Logger.Log("Other mapping to: "+otherMappings.Class+" / "+mapping.Class);
+                        Logger.Log("Other mapping to: "+otherMappings.Class+" / "+mapping.Class);
                         if (otherMappings.Priority > mapping.Priority)
                         {
                             mapping.Enabled = false;
@@ -73,7 +72,7 @@ namespace Rocket.Core.Commands
             commandMappings.Save();
         }
 
-        private IRocketCommand GetCommand(IRocketCommand command)
+        public IRocketCommand GetCommand(IRocketCommand command)
         {
            return GetCommand(command.Name);
         }
@@ -85,7 +84,7 @@ namespace Rocket.Core.Commands
             return foundCommand;
         }
 
-        private static string getCommandIdentity(IRocketCommand command,string name)
+        private static string GetCommandIdentity(IRocketCommand command,string name)
         {
             if (command is RocketAttributeCommand)
             {
@@ -101,7 +100,7 @@ namespace Rocket.Core.Commands
             }
         }
 
-        private static Type getCommandType(IRocketCommand command)
+        private static Type GetCommandType(IRocketCommand command)
         {
             if (command is RocketAttributeCommand)
             {
@@ -146,19 +145,19 @@ namespace Rocket.Core.Commands
         {
             string name = command.Name;
             if (alias != null) name = alias;
-            string className = getCommandIdentity(command,name);
+            string className = GetCommandIdentity(command,name);
 
 
             //Add CommandMapping if not already existing
             if(commandMappings.Instance.CommandMappings.Where(m => m.Class == className && m.Name == name).FirstOrDefault() == null){
                 commandMappings.Instance.CommandMappings.Add(new CommandMapping(name,className,true,priority));
             }
-            checkDuplicateCommandMappings(className);
+            CheckDuplicateCommandMappings(className);
 
             foreach(CommandMapping mapping in commandMappings.Instance.CommandMappings.Where(m => m.Class == className && m.Enabled))
             {
                 commands.Add(new RegisteredRocketCommand(mapping.Name.ToLower(), command));
-                Logging.Logger.Log("[registered] /" + mapping.Name.ToLower() + " (" + mapping.Class + ")", ConsoleColor.Green);
+                Logger.Log("[registered] /" + mapping.Name.ToLower() + " (" + mapping.Class + ")", ConsoleColor.Green);
             }
         }
 
@@ -210,17 +209,17 @@ namespace Rocket.Core.Commands
                 {
                     if (rocketCommand.AllowedCaller == AllowedCaller.Player && player is ConsolePlayer)
                     {
-                        Logging.Logger.Log("This command can't be called from console");
+                        Logger.Log("This command can't be called from console");
                         return false;
                     }
                     if (rocketCommand.AllowedCaller == AllowedCaller.Console && !(player is ConsolePlayer))
                     {
-                        Logging.Logger.Log("This command can only be called from console");
+                        Logger.Log("This command can only be called from console");
                         return false;
                     }
                     if(cooldown != -1)
                     {
-                        Logging.Logger.Log("This command is still on cooldown");
+                        Logger.Log("This command is still on cooldown");
                         return false;
                     }
                     try
@@ -236,7 +235,7 @@ namespace Rocket.Core.Commands
                                 }
                                 catch (Exception ex)
                                 {
-                                    Logging.Logger.LogException(ex);
+                                    Logger.LogException(ex);
                                 }
                             }
                         }
@@ -249,7 +248,7 @@ namespace Rocket.Core.Commands
                             }
                             catch (NoPermissionsForCommandException ex)
                             {
-                                Logging.Logger.LogWarning(ex.Message);
+                                Logger.LogWarning(ex.Message);
                             }
                             catch (WrongUsageOfCommandException)
                             {
@@ -263,7 +262,7 @@ namespace Rocket.Core.Commands
                     }
                     catch (Exception ex)
                     {
-                        Logging.Logger.LogError("An error occured while executing " + rocketCommand.Name + " [" + String.Join(", ", parameters) + "]: " + ex.ToString());
+                        Logger.LogError("An error occured while executing " + rocketCommand.Name + " [" + string.Join(", ", parameters) + "]: " + ex.ToString());
                     }
                     return true;
                 }
@@ -336,13 +335,12 @@ namespace Rocket.Core.Commands
         {
             public Type Type;
             public IRocketCommand Command;
-            private string name;
 
             public RegisteredRocketCommand(string name,IRocketCommand command)
             {
-                this.name = name;
+                Name = name;
                 Command = command;
-                Type = getCommandType(command);
+                Type = GetCommandType(command);
             }
 
             public List<string> Aliases
@@ -369,13 +367,7 @@ namespace Rocket.Core.Commands
                 }
             }
 
-            public string Name
-            {
-                get
-                {
-                    return name;
-                }
-            }
+            public string Name { get; }
 
             public List<string> Permissions
             {
@@ -404,54 +396,47 @@ namespace Rocket.Core.Commands
         {
             internal RocketAttributeCommand(string Name,string Help,string Syntax,AllowedCaller AllowedCaller,List<string>Permissions,List<string>Aliases,MethodInfo Method)
             {
-                name = Name;
-                help = Help;
-                syntax = Syntax;
-                permissions = Permissions;
-                aliases = Aliases;
-                method = Method;
-                allowedCaller = AllowedCaller;
+                this.Name = Name;
+                this.Help = Help;
+                this.Syntax = Syntax;
+                this.Permissions = Permissions;
+                this.Aliases = Aliases;
+                this.Method = Method;
+                this.AllowedCaller = AllowedCaller;
             }
 
-            private List<string> aliases;
-            public List<string> Aliases{ get { return aliases; } }
+            public List<string> Aliases { get; }
 
-            private AllowedCaller allowedCaller;
-            public AllowedCaller AllowedCaller { get { return allowedCaller; } }
+            public AllowedCaller AllowedCaller { get; }
 
-            private string help;
-            public string Help { get { return help; } }
+            public string Help { get; }
 
-            private string name;
-            public string Name { get { return name; } }
+            public string Name { get; }
 
-            private string syntax;
-            public string Syntax { get { return syntax; } }
+            public string Syntax { get; }
 
-            private List<string> permissions;
-            public List<string> Permissions { get { return permissions; } }
+            public List<string> Permissions { get; }
 
-            private MethodInfo method;
-            public MethodInfo Method { get { return method; } }
+            public MethodInfo Method { get; }
             public void Execute(IRocketPlayer caller, string[] parameters)
             {
-                ParameterInfo[] methodParameters = method.GetParameters();
+                ParameterInfo[] methodParameters = Method.GetParameters();
                 switch (methodParameters.Length)
                 {
                     case 0:
-                        method.Invoke(R.Plugins.GetPlugin(method.ReflectedType.Assembly), null);
+                        Method.Invoke(R.Plugins.GetPlugin(Method.ReflectedType.Assembly), null);
                         break;
                     case 1:
                         if (methodParameters[0].ParameterType == typeof(IRocketPlayer))
-                            method.Invoke(R.Plugins.GetPlugin(method.ReflectedType.Assembly), new object[] { caller });
+                            Method.Invoke(R.Plugins.GetPlugin(Method.ReflectedType.Assembly), new object[] { caller });
                         else if (methodParameters[0].ParameterType == typeof(string[]))
-                            method.Invoke(R.Plugins.GetPlugin(method.ReflectedType.Assembly), new object[] { parameters });
+                            Method.Invoke(R.Plugins.GetPlugin(Method.ReflectedType.Assembly), new object[] { parameters });
                         break;
                     case 2:
                         if (methodParameters[0].ParameterType == typeof(IRocketPlayer) && methodParameters[1].ParameterType == typeof(string[]))
-                            method.Invoke(R.Plugins.GetPlugin(method.ReflectedType.Assembly), new object[] { caller, parameters });
+                            Method.Invoke(R.Plugins.GetPlugin(Method.ReflectedType.Assembly), new object[] { caller, parameters });
                         else if (methodParameters[0].ParameterType == typeof(string[]) && methodParameters[1].ParameterType == typeof(IRocketPlayer))
-                            method.Invoke(R.Plugins.GetPlugin(method.ReflectedType.Assembly), new object[] { parameters, caller });
+                            Method.Invoke(R.Plugins.GetPlugin(Method.ReflectedType.Assembly), new object[] { parameters, caller });
                         break;
                 }
             }

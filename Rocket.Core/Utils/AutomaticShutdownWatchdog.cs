@@ -1,5 +1,4 @@
-﻿using Rocket.Core.Logging;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Rocket.Core.Utils
@@ -10,7 +9,7 @@ namespace Rocket.Core.Utils
         {
             if (started)
             {
-                checkTimerRestart();
+                CheckTimerRestart();
             }
         }
 
@@ -18,7 +17,7 @@ namespace Rocket.Core.Utils
         private bool shutdown = false;
         public static AutomaticShutdownWatchdog Instance;
         private bool started = false;
-        private DateTime startedTime = DateTime.Now;
+        private readonly DateTime startedTime = DateTime.Now;
 
         private void Start()
         {
@@ -31,7 +30,7 @@ namespace Rocket.Core.Utils
             started = true;
         }
 
-        private void checkTimerRestart()
+        private void CheckTimerRestart()
         {
             try
             {

@@ -1,7 +1,4 @@
-﻿using Rocket.API.Collections;
-using System.Collections.Generic;
-
-namespace Rocket.API
+﻿namespace Rocket.API
 {
     public delegate void ImplementationShutdown();
 

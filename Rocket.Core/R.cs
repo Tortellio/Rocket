@@ -10,7 +10,6 @@ using Rocket.API.Extensions;
 using Rocket.Core.Serialization;
 using Rocket.API.Collections;
 using Rocket.Core.Extensions;
-using Rocket.Core.Logging;
 using Rocket.Core.Commands;
 using System.Reflection;
 
@@ -70,7 +69,7 @@ namespace Rocket.Core
                 };
                 
                 Settings = new XMLFileAsset<RocketSettings>(Environment.SettingsFile);
-                Translation = new XMLFileAsset<TranslationList>(String.Format(Environment.TranslationFile, Settings.Instance.LanguageCode), new Type[] { typeof(TranslationList), typeof(TranslationListEntry) }, defaultTranslations);
+                Translation = new XMLFileAsset<TranslationList>(string.Format(Environment.TranslationFile, Settings.Instance.LanguageCode), new Type[] { typeof(TranslationList), typeof(TranslationListEntry) }, defaultTranslations);
                 defaultTranslations.AddUnknownEntries(Translation);
                 Permissions = gameObject.TryAddComponent<RocketPermissionsManager>();
                 Plugins = gameObject.TryAddComponent<RocketPluginManager>();

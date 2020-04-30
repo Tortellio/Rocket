@@ -1,9 +1,9 @@
-﻿using Rocket.Core.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace Rocket.Core.Utils
 {
@@ -12,8 +12,8 @@ namespace Rocket.Core.Utils
         private static int numThreads;
         private static bool awake = false;
 
-        private static List<Action> actions = new List<Action>();
-        private static List<DelayedQueueItem> delayed = new List<DelayedQueueItem>();
+        private static readonly List<Action> actions = new List<Action>();
+        private static readonly List<DelayedQueueItem> delayed = new List<DelayedQueueItem>();
 
         public struct DelayedQueueItem
         {
@@ -63,7 +63,7 @@ namespace Rocket.Core.Utils
             }
             catch(Exception ex)
             {
-                Logging.Logger.LogException(ex,"Error while running action");
+                Logger.LogException(ex,"Error while running action");
             }
             finally
             {

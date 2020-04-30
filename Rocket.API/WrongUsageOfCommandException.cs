@@ -1,15 +1,11 @@
-﻿using Rocket.API.Serialisation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 
 namespace Rocket.API
 {
     public class WrongUsageOfCommandException : Exception
     {
-        private IRocketCommand command;
-        private IRocketPlayer player;
+        private readonly IRocketCommand command;
+        private readonly IRocketPlayer player;
         public WrongUsageOfCommandException(IRocketPlayer player, IRocketCommand command)
         {
             this.command = command;

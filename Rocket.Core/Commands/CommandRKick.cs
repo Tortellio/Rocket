@@ -2,10 +2,7 @@
 using Rocket.API.Extensions;
 using Rocket.Core.Logging;
 using Rocket.Core.RCON;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Rocket.Core.Commands
 {
@@ -51,7 +48,7 @@ namespace Rocket.Core.Commands
             }
             foreach (RCONConnection client in RCONServer.Clients)
             {
-                if (client.InstanceID == (int)instance)
+                if (client.InstanceID == instance)
                 {
                     Logger.Log(R.Translate("command_rkick_kicked", instance.ToString(), client.Address));
                     client.Close();

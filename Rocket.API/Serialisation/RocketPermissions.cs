@@ -20,10 +20,10 @@ namespace Rocket.API.Serialisation
 
         public void LoadDefaults()
         {
-            DefaultGroup = "default";
+            DefaultGroup = "player";
             Groups = new List<RocketPermissionsGroup> {
-                new RocketPermissionsGroup("default","Guest",null, new List<string>() , new List<Permission>() { new Permission("p"), new Permission("compass"),  new Permission("rocket")},"white"),
-                new RocketPermissionsGroup("vip","VIP", "default",new List<string>() { "76561198016438091" }, new List<Permission>() {  new Permission("effect"), new Permission("heal",120), new Permission("v",30) },"FF9900")
+                new RocketPermissionsGroup("player","Player",null, new List<string>() , new List<Permission>() { new Permission("p"), new Permission("compass"),  new Permission("rocket")},"white"),
+                new RocketPermissionsGroup("vip","VIP", "player",new List<string>() { "76561198016438091" }, new List<Permission>() {  new Permission("effect"), new Permission("heal",120), new Permission("v",30) },"FF9900")
             };
         }
     }
